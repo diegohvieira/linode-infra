@@ -1,0 +1,18 @@
+instances:
+  - label: "zabbix"
+    machine_type: "g6-standard-1"
+    region: "us-east"
+    image: "linode/debian12"
+    network:
+      - type: "ipv4"
+        public: true
+        private: true
+  
+  #- label: "pref-smc"
+  #  machine_type: "g6-standard-1"
+  #  region: "us-east"
+  #  image: "linode/debian12"
+  #  network:
+  #    - type: "ipv4"
+  #      public: true
+  #      private: true
