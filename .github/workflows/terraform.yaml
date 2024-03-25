@@ -16,13 +16,10 @@ on:
 
 jobs:
  terraform:
-   env:
-     TF_WORKING_DIR: ./deployments/terraform
 
    defaults:
      run:
        shell: bash
-       working-directory: ${{ env.TF_WORKING_DIR }}
 
    permissions:
      contents: read
@@ -64,7 +61,7 @@ jobs:
      - uses: actions/github-script@v6
        if: github.event_name == 'pull_request'
        env:
-         PLAN: "${{ env.TF_WORKING_DIR }}\n${{ steps.plan.outputs.stdout }}"
+         PLAN: "${{ steps.plan.outputs.stdout }}"
        with:
          github-token: ${{ secrets.GITHUB_TOKEN }}
          script: |
@@ -98,4 +95,3 @@ jobs:
      #  env:
      #     LINODE_TOKEN: ${{ secrets.LINODE_TOKEN }}
      #  run: terraform apply -auto-approve -input=false
-
