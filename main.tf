@@ -35,7 +35,7 @@ resource "local_file" "private_key" {
 # Create a Linode SSH key
 resource "linode_sshkey" "foo" {
   for_each   = { for instance in local.instances : instance.label => instance }
-  label      = each.value.label
+  label      = join("_", [each.value.label, "key"])
   ssh_key    = chomp(tls_private_key.ssh_keys[each.key].public_key_openssh)
   depends_on = [tls_private_key.ssh_keys]
 }
@@ -49,6 +49,6 @@ resource "linode_instance" "default" {
   image           = each.value.image
   root_pass       = random_password.password[each.key].result
   authorized_keys = [trimspace(tls_private_key.ssh_keys[each.key].public_key_openssh)]
-  private_ip      = true
-
+  private_ip      = can(each.value.private_ip) ? each.value.private_ip : null
 }
+

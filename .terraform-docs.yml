@@ -1,0 +1,28 @@
+formatter: "markdown table" # this is required
+
+content: ""
+header-from: docs/header.md
+
+output:
+  file: README.md # output-file
+  mode: replace
+  template: |-
+    <!-- BEGIN_TF_DOCS -->
+    {{ .Content }}
+    <!-- END_TF_DOCS -->
+
+output-values:
+  enabled: false
+  from: ""
+
+sort:
+  enabled: true
+  by: name
+
+settings:
+  anchor: true
+  escape: true
+  hide-empty: true
+  html: true
+  indent: 3
+  lockfile: true

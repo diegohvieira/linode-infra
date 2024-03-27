@@ -5,6 +5,7 @@ on:
 jobs:
  tf-destroy:
    runs-on: ubuntu-latest
+   permissions: read-all
    env:
     LINODE_TOKEN: ${{ secrets.LINODE_TOKEN }}
    steps:

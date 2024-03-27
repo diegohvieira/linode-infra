@@ -15,8 +15,24 @@ on:
         - '.github/workflows/terraform.yaml'
 
 jobs:
- terraform:
 
+  test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    env:
+      PRE_IMG: "ghcr.io/antonbabenko/pre-commit-terraform:latest"
+    steps:
+    -
+      name: Check out
+      uses: actions/checkout@v4
+    -
+      name: Run pre-commit-terraform
+      run: |
+        rm -rf examples
+        docker run -v $(pwd):/lint -w /lint $PRE_IMG run -a
+
+  terraform:
+   runs-on: ubuntu-latest
    defaults:
      run:
        shell: bash
@@ -25,8 +41,8 @@ jobs:
      contents: read
      id-token: write # Required to authenticate
      pull-requests: write # Required to post comments
-
-   runs-on: ubuntu-latest
+   needs: test
+   
    steps:
      # Checkout the base branch of the pull request (e.g. main/master).
      - name: Checkout
