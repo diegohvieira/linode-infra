@@ -8,5 +8,6 @@ instances:
     machine_type: "g6-standard-1" # [REQUIRED] Define the machine type
     region: "us-east" # [REQUIRED] Define the region of the instance
     image: "linode/debian12" # Image used to create the instance.Official Linode Images start with linode/, while your Images start with private/.
-    private_ip: true
+    networking:
+      private_ip: true # Enable private IP
 ```

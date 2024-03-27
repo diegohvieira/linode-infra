@@ -1,3 +1,4 @@
+# Reading .yml files from the values/instances directory
 locals {
   instances_config_path = "./values/instances"
   instance_sets         = fileset(local.instances_config_path, "*.yml")
@@ -5,10 +6,23 @@ locals {
     for idx, content in yamldecode(file("${local.instances_config_path}/${instance}")).instances : content
     ]
   ])
+  private_keys_bucket_name   = "terraform-us-east-1-0423"
+  private_keys_bucket_region = "us-east-1"
+}
+
+# Create a Linode Object Storage keys
+# Reference: https://registry.terraform.io/providers/linode/linode/latest/docs/resources/object_storage_key
+resource "linode_object_storage_key" "default" {
+  label = "gha-linode-infra"
+  bucket_access {
+    bucket_name = local.private_keys_bucket_name
+    cluster     = local.private_keys_bucket_region
+    permissions = "read_write"
+  }
 }
 
 # Generate a random password
-
+#Reference: https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password
 resource "random_password" "password" {
   for_each         = { for instance in local.instances : instance.label => instance }
   length           = 16
@@ -17,6 +31,7 @@ resource "random_password" "password" {
 }
 
 # Generate a new SSH key
+# Reference: https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key
 resource "tls_private_key" "ssh_keys" {
   for_each  = { for instance in local.instances : instance.label => instance }
   algorithm = "RSA"
@@ -24,6 +39,7 @@ resource "tls_private_key" "ssh_keys" {
 }
 
 # Save the private key to a file
+# Reference: https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file
 resource "local_file" "private_key" {
   for_each        = { for instance in local.instances : instance.label => instance }
   content         = tls_private_key.ssh_keys[each.key].private_key_pem
@@ -32,7 +48,22 @@ resource "local_file" "private_key" {
   depends_on      = [tls_private_key.ssh_keys]
 }
 
-# Create a Linode SSH key
+# Upload the private key to Linode Object Storage
+# Reference: https://registry.terraform.io/providers/linode/linode/latest/docs/resources/object_storage_object
+resource "linode_object_storage_object" "object" {
+  for_each   = { for instance in local.instances : instance.label => instance }
+  bucket     = local.private_keys_bucket_name
+  cluster    = local.private_keys_bucket_region
+  key        = "ssh/${each.value.label}_rsa.pem"
+  secret_key = linode_object_storage_key.default.secret_key
+  access_key = linode_object_storage_key.default.access_key
+  source     = pathexpand("ssh/${each.value.label}_rsa.pem")
+  depends_on = [linode_object_storage_key.default]
+}
+
+
+# Adding a Linode SSH key to the Linode account
+# Reference: https://registry.terraform.io/providers/linode/linode/latest/docs/resources/sshkey
 resource "linode_sshkey" "foo" {
   for_each   = { for instance in local.instances : instance.label => instance }
   label      = join("_", [each.value.label, "key"])
@@ -41,6 +72,7 @@ resource "linode_sshkey" "foo" {
 }
 
 # Create a Linode instance
+# Reference: https://registry.terraform.io/providers/linode/linode/latest/docs/resources/instance
 resource "linode_instance" "default" {
   for_each        = { for instance in local.instances : instance.label => instance }
   label           = lower(join("-", compact([each.value.label, each.value.region])))
