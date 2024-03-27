@@ -9,7 +9,8 @@ instances:
     machine_type: "g6-standard-1" # [REQUIRED] Define the machine type
     region: "us-east" # [REQUIRED] Define the region of the instance
     image: "linode/debian12" # Image used to create the instance.Official Linode Images start with linode/, while your Images start with private/.
-    private_ip: true
+    networking:
+      private_ip: true # Enable private IP
 ```
 
 ### Requirements
@@ -36,6 +37,8 @@ instances:
 | Name | Type |
 |------|------|
 | [linode_instance.default](https://registry.terraform.io/providers/linode/linode/2.17.0/docs/resources/instance) | resource |
+| [linode_object_storage_key.default](https://registry.terraform.io/providers/linode/linode/2.17.0/docs/resources/object_storage_key) | resource |
+| [linode_object_storage_object.object](https://registry.terraform.io/providers/linode/linode/2.17.0/docs/resources/object_storage_object) | resource |
 | [linode_sshkey.foo](https://registry.terraform.io/providers/linode/linode/2.17.0/docs/resources/sshkey) | resource |
 | [local_file.private_key](https://registry.terraform.io/providers/hashicorp/local/2.5.1/docs/resources/file) | resource |
 | [random_password.password](https://registry.terraform.io/providers/hashicorp/random/3.6.0/docs/resources/password) | resource |
