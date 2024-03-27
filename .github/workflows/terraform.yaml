@@ -4,13 +4,11 @@ on:
       branches: [ "main" ]
       paths:
         - 'values/instances/**'
-        - 'values/network/**'
         - '.*.tf'
         - '.github/workflows/terraform.yaml'
     pull_request:
       paths:
         - 'values/instances/**'
-        - 'values/network/**'
         - '.*.tf'
         - '.github/workflows/terraform.yaml'
 
