@@ -13,99 +13,93 @@ on:
         - '.github/workflows/terraform.yaml'
 
 jobs:
-
   test:
+    name: Testing Terraform code
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     env:
       PRE_IMG: "ghcr.io/antonbabenko/pre-commit-terraform:latest"
     steps:
-    -
-      name: Check out
+    - name: Check out
       uses: actions/checkout@v4
-    -
-      name: Run pre-commit-terraform
+    - name: Run pre-commit-terraform
       run: |
         rm -rf examples
         docker run -v $(pwd):/lint -w /lint $PRE_IMG run -a
 
   terraform:
-   runs-on: ubuntu-latest
-   defaults:
-     run:
-       shell: bash
+    name: Executing Terraform
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
 
-   permissions:
-     contents: read
-     id-token: write # Required to authenticate
-     pull-requests: write # Required to post comments
-   needs: test
+    permissions:
+      contents: read
+      id-token: write # Required to authenticate
+      pull-requests: write # Required to post comments
+    needs: test
    
-   steps:
-     # Checkout the base branch of the pull request (e.g. main/master).
-     - name: Checkout
-       uses: actions/checkout@v4
-     - name: Set up Terraform
-       uses: hashicorp/setup-terraform@v3
-     # Authenticate to Linode
-     # Terraform fmt
-     - id: fmt
-       name: Terraform fmt
-       run: |
-        terraform fmt -check
-     # Terraform init
-     - id: init
-       name: Terraform Init
-       env:
+    steps:
+      # Checkout the base branch of the pull request (e.g. main/master).
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+      # Authenticate to Linode
+      # Terraform fmt
+      - id: fmt
+        name: Terraform fmt
+        run: |
+         terraform fmt -check
+      # Terraform init
+      - id: init
+        name: Terraform Init
+        env:
+          LINODE_TOKEN: ${{ secrets.LINODE_TOKEN }}
+        run: |
+         terraform init -backend-config="access_key=${{ secrets.LINODE_ACCESS_KEY }}" -backend-config="secret_key=${{ secrets.LINODE_SECRET_KEY }}" -backend-config=bucket="${{ secrets.LINODE_BUCKET }}"
+      # Terraform validate
+      - id: validate
+        name: Terraform Validate
+        run: terraform validate -no-color
+      # Execute terraform plan
+      - id: plan
+        name: Terraform Plan
+        env:
          LINODE_TOKEN: ${{ secrets.LINODE_TOKEN }}
-       run: |
-        terraform init -backend-config="access_key=${{ secrets.LINODE_ACCESS_KEY }}" -backend-config="secret_key=${{ secrets.LINODE_SECRET_KEY }}" -backend-config=bucket="${{ secrets.LINODE_BUCKET }}"
-     # Terraform validate
-     - id: validate
-       name: Terraform Validate
-       run: terraform validate -no-color
-     # Execute terraform plan
-     - id: plan
-       name: Terraform Plan
-       env:
-        LINODE_TOKEN: ${{ secrets.LINODE_TOKEN }}
-       run: terraform plan -no-color
-       continue-on-error: true
-     # Comment on the PR with the plan
-     - uses: actions/github-script@v6
-       if: github.event_name == 'pull_request'
-       env:
-         PLAN: "${{ steps.plan.outputs.stdout }}"
-       with:
-         github-token: ${{ secrets.GITHUB_TOKEN }}
-         script: |
-           const output = `#### Terraform Format 🖌\`${{ steps.fmt.outcome }}\`
-           #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-           #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
-           #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-
-           <details><summary>Show Plan</summary>
-
-           \`\`\`\n
-           ${process.env.PLAN}
-           \`\`\`
-
-           </details>
-
-           *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
-
-           github.rest.issues.createComment({
-             issue_number: context.issue.number,
-             owner: context.repo.owner,
-             repo: context.repo.repo,
-             body: output
-           })
-     - name: Terraform Plan Status
-       if: steps.plan.outcome == 'failure'
-       run: exit 1
-     # Terraform apply on push to main
-     #- name: Terraform Apply
-     #  if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-     #  env:
-     #     LINODE_TOKEN: ${{ secrets.LINODE_TOKEN }}
-     #  run: terraform apply -auto-approve -input=false
+        run: terraform plan -no-color
+        continue-on-error: true
+      # Generate comment to the Pull Request using 'steps.plan.outputs'
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Format 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\` 
+            <details><summary>Show Plan</summary> 
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`  
+            </details>  
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`; 
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+      # Terraform apply on push to main
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        env:
+           LINODE_TOKEN: ${{ secrets.LINODE_TOKEN }}
+        run: terraform apply -auto-approve -input=false
