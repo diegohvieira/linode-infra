@@ -1,6 +1,6 @@
 # Reading .yml files from the values/instances directory
 locals {
-  instances_config_path = "./values/instances"
+  instances_config_path = "../values/instances"
   instance_sets         = fileset(local.instances_config_path, "*.yml")
   instances = flatten([for instance in local.instance_sets : [
     for idx, content in yamldecode(file("${local.instances_config_path}/${instance}")).instances : content
