@@ -27,7 +27,7 @@ jobs:
         id: create_release
         uses: comnoco/create-release-action@v2
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.semver.outputs.next }}
           release_name: ${{ steps.semver.outputs.next }}
