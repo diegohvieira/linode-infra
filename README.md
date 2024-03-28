@@ -3,6 +3,9 @@
 
 **TODO:** Explicar funcionamento
 
+- Criar um bucket que irá armazenar os terraform state e as private keys.
+- Criar as chaves para acesso ao bucket
+
 ```yml
 instances:
   - label: "zabbix" # Set the label of the instance
