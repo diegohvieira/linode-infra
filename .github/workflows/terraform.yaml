@@ -12,6 +12,7 @@ on:
         - 'values/instances/**'
         - terraform/**
         - '.github/workflows/terraform.yaml'
+
 permissions:
   contents: read
   id-token: write # Required to authenticate
