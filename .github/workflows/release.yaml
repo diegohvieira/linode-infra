@@ -1,4 +1,4 @@
-name: Crete Release on Push
+name: Crete Release
 
 on:
   push:
