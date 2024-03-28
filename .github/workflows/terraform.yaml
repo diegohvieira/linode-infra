@@ -4,19 +4,23 @@ on:
       branches: [ "main" ]
       paths:
         - 'values/instances/**'
-        - '.*.tf'
+        - terraform/**
         - '.github/workflows/terraform.yaml'
     pull_request:
+      types: [opened, synchronize, reopened, ready_for_review]
       paths:
         - 'values/instances/**'
-        - '.*.tf'
+        - terraform/**
         - '.github/workflows/terraform.yaml'
+permissions:
+  contents: read
+  id-token: write # Required to authenticate
+  pull-requests: write # Required to post comments
 
 jobs:
   test:
     name: Testing Terraform code
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
     env:
       PRE_IMG: "ghcr.io/antonbabenko/pre-commit-terraform:latest"
     steps:
@@ -30,15 +34,14 @@ jobs:
   terraform:
     name: Executing Terraform
     runs-on: ubuntu-latest
+    needs: test
     defaults:
       run:
         shell: bash
-
-    permissions:
-      contents: read
-      id-token: write # Required to authenticate
-      pull-requests: write # Required to post comments
-    needs: test
+        # run all steps in the 'terraform' directory
+        working-directory: ./terraform
+    # to avoid using GitHub Runners time limit
+    timeout-minutes: 10
    
     steps:
       # Checkout the base branch of the pull request (e.g. main/master).
@@ -102,4 +105,5 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         env:
            LINODE_TOKEN: ${{ secrets.LINODE_TOKEN }}
-        run: terraform apply -auto-approve -input=false
+        run: | 
+          terraform apply -auto-approve -input=false
