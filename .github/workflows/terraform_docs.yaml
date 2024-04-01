@@ -17,3 +17,4 @@ jobs:
         working-dir: ./terraform
         git-push: "true"
         config-file: .terraform-docs.yml
+        output-file: ../README.md
