@@ -5,11 +5,3 @@ instances:
     image: "linode/debian12"
     networking:
       private_ip: true
-
-  - label: "pf-smc"
-    machine_type: "g6-standard-1"
-    region: "us-east"
-    image: "linode/debian12"
-    networking:
-      private_ip: true
-  
