@@ -4,3 +4,10 @@ output "instance_label" {
     for k, v in linode_instance.default : k => v.label
   }
 }
+
+output "ip_address" {
+  description = "Instances created IP address"
+  value = {
+    for k, v in linode_instance.default : k => v.ipv4
+  }
+}
