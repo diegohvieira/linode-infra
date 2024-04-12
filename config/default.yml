@@ -1,0 +1,11 @@
+defaults:
+  bucket_name: "terraform-us-east-1-0423"
+  bucket_region: "us-east-1"
+  domain: "diegovieira.dev.br"
+  machine_type: "g6-standard-1"
+  region: "us-mia"
+  image: "linode/ubuntu22.04"
+  networking:
+    private_ip: true
+    vpc_id: 54751
+    subnet_id: 54395

@@ -8,6 +8,6 @@ output "instance_label" {
 output "ip_address" {
   description = "Instances created IP address"
   value = {
-    for k, v in linode_instance.default : k => v.ipv4
+    for k, v in linode_instance.default : k => v.ip_address
   }
 }

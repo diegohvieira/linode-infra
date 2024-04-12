@@ -1,7 +1,28 @@
 instances:
-  - label: "pf-campo-alegre"
+  #- label: "pf-alegre"
+  #  machine_type: "g6-standard-1"
+  #  region: "us-mia"
+  #  image: "linode/ubuntu22.04"
+  #  networking:
+  #    private_ip: true
+  #    public_ip: true
+  #    vpc:
+  #      subnet_id: 54395
+  #      ipv4: 10.10.0.99
+#
+  #- label: "pf-alegre-02"
+  #  machine_type: "g6-standard-1"
+  #  region: "us-mia"
+  #  image: "linode/ubuntu22.04"
+  #  networking:
+  #    private_ip: true
+  #    public_ip: true
+  #    vpc:
+  #      subnet_id: 54395
+
+  - label: "pf-alegre-03"
     machine_type: "g6-standard-1"
-    region: "us-east"
-    image: "linode/debian12"
+    region: "us-mia"
+    image: "linode/ubuntu22.04"
     networking:
       private_ip: true
