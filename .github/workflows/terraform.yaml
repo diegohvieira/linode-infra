@@ -3,13 +3,13 @@ on:
     push:
       branches: [ "main" ]
       paths:
-        - 'values/instances/**'
+        - 'values/**'
         - terraform/**
         - '.github/workflows/terraform.yaml'
     pull_request:
       types: [opened, synchronize, reopened, ready_for_review]
       paths:
-        - 'values/instances/**'
+        - 'values/**'
         - terraform/**
         - '.github/workflows/terraform.yaml'
 
