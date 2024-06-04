@@ -9,6 +9,21 @@
 | <a name="requirement_random"></a> [random](#requirement\_random) | 3.6.0 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | 4.0.5 |
 
+### Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_linode"></a> [linode](#provider\_linode) | 2.17.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.6.0 |
+
+### Resources
+
+| Name | Type |
+|------|------|
+| [linode_object_storage_bucket.mybucket](https://registry.terraform.io/providers/linode/linode/2.17.0/docs/resources/object_storage_bucket) | resource |
+| [linode_object_storage_key.default](https://registry.terraform.io/providers/linode/linode/2.17.0/docs/resources/object_storage_key) | resource |
+| [random_integer.sufix](https://registry.terraform.io/providers/hashicorp/random/3.6.0/docs/resources/integer) | resource |
+
 ### Outputs
 
 | Name | Description |
