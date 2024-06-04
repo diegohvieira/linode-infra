@@ -1,10 +1,13 @@
 formatter: "markdown table" # this is required
 
 content: ""
-header-from: ../docs/header.md
+
+recursive:
+  enabled: true
+  path: terraform
 
 output:
-  file: ../README.md # output-file
+  file: README.md # output-file
   mode: replace
   template: |-
     <!-- BEGIN_TF_DOCS -->

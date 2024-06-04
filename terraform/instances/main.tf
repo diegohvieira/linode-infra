@@ -1,12 +1,12 @@
 # Reading .yml files from the config directory
 locals {
-  config_path = "../config"
+  config_path = "../../config"
   configs     = yamldecode(file("${local.config_path}/default.yml")).defaults
 }
 
 # Reading .yml files from the values/instances directory
 locals {
-  instances_config_path = "../values/instances"
+  instances_config_path = "../../values/instances"
   instance_sets         = fileset(local.instances_config_path, "*.yml")
   instances = flatten([for instance in local.instance_sets : [
     for idx, content in yamldecode(file("${local.instances_config_path}/${instance}")).instances : content
@@ -67,7 +67,6 @@ resource "linode_object_storage_object" "object" {
   depends_on = [linode_object_storage_key.default]
 }
 
-
 # Adding a Linode SSH key to the Linode account
 # Reference: https://registry.terraform.io/providers/linode/linode/latest/docs/resources/sshkey
 resource "linode_sshkey" "foo" {
@@ -97,7 +96,7 @@ resource "linode_instance" "default" {
     for_each = can(each.value.networking.vpc.subnet_id) ? [each.value.networking.vpc.subnet_id] : []
     content {
       purpose   = "vpc"
-      subnet_id = try(each.value.networking.vpc.subnet_id, local.configs.networking.subnet_id) #lookup(each.value, "id", local.configs.networking.vpc)
+      subnet_id = try(each.value.networking.vpc.subnet_id, local.configs.networking.subnet_id)
       dynamic "ipv4" {
         for_each = can(each.value.networking.vpc.ipv4) ? [1] : []
         content {
@@ -110,7 +109,6 @@ resource "linode_instance" "default" {
   depends_on = [linode_object_storage_object.object, linode_sshkey.foo]
 }
 
-
 # Register a Linode Domain
 # Reference: https://registry.terraform.io/providers/linode/linode/latest/docs/resources/domain
 resource "linode_domain_record" "instance_domain" {
@@ -121,4 +119,3 @@ resource "linode_domain_record" "instance_domain" {
   target      = linode_instance.default[each.key].ip_address
   depends_on  = [linode_instance.default]
 }
-
