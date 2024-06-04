@@ -1,0 +1,4 @@
+storage:
+  - label: "pf-alegre-03"
+    region: "us-mia"
+    versioning: true
