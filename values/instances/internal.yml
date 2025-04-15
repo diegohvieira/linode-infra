@@ -1,5 +1,5 @@
 instances:
-  #- label: "pf-alegre"
+  #- label: "test"
   #  machine_type: "g6-standard-1"
   #  region: "us-mia"
   #  image: "linode/ubuntu22.04"
@@ -10,7 +10,7 @@ instances:
   #      subnet_id: 54395
   #      ipv4: 10.10.0.99
 #
-  #- label: "pf-alegre-02"
+  #- label: "test-02"
   #  machine_type: "g6-standard-1"
   #  region: "us-mia"
   #  image: "linode/ubuntu22.04"
@@ -20,7 +20,7 @@ instances:
   #    vpc:
   #      subnet_id: 54395
 
-  - label: "pf-alegre-03"
+  - label: "test-03"
     machine_type: "g6-standard-1"
     region: "us-mia"
     image: "linode/ubuntu22.04"
